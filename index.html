@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ping Pong Game Launcher</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px;
+            background: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+        }
+        .btn:hover {
+            background: #45a049;
+        }
+        .btn-host {
+            background: #2196F3;
+        }
+        .btn-host:hover {
+            background: #0b7dda;
+        }
+        .instructions {
+            margin-top: 20px;
+            text-align: left;
+            max-width: 500px;
+        }
+        #ip-display {
+            font-weight: bold;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ping Pong Game</h1>
+        
+        <div id="ip-display">Your IP: <span id="ip-address">Loading...</span></div>
+        
+        <button class="btn btn-host" onclick="launchGame('host')">Host Game</button>
+        <button class="btn" onclick="launchGame('join')">Join Game</button>
+        
+        <div class="instructions">
+            <h3>How to Play:</h3>
+            <p><strong>Host:</strong> Click "Host Game" and share your IP address</p>
+            <p><strong>Join:</strong> Click "Join Game" and enter the host's IP</p>
+            <p><strong>Controls:</strong> Use UP/DOWN arrow keys to move your paddle</p>
+        </div>
+    </div>
+
+    <script>
+        // Get local IP (works on most modern browsers)
+        async function getIP() {
+            try {
+                const peerConnection = new RTCPeerConnection({iceServers: []});
+                peerConnection.createDataChannel('');
+                const offer = await peerConnection.createOffer();
+                await peerConnection.setLocalDescription(offer);
+                
+                const ipRegex = /([0-9]{1,3}(\.[0-9]{1,3}){3})/;
+                const ipMatch = ipRegex.exec(peerConnection.localDescription.sdp);
+                if (ipMatch && ipMatch[1]) {
+                    document.getElementById('ip-address').textContent = ipMatch[1];
+                } else {
+                    document.getElementById('ip-address').textContent = "Check your system settings";
+                }
+            } catch (e) {
+                document.getElementById('ip-address').textContent = "Could not detect IP";
+            }
+        }
+
+        function launchGame(mode) {
+            let url = 'game.py'; // This would actually need to be a proper executable
+            if (mode === 'join') {
+                const hostIp = prompt("Enter host IP address:");
+                if (hostIp) {
+                    // In a real implementation, this would launch the Python game with parameters
+                    alert(`Would connect to ${hostIp} in the real game`);
+                }
+            } else {
+                // In a real implementation, this would launch the Python game in host mode
+                alert("Would start hosting in the real game");
+            }
+        }
+
+        // Get IP when page loads
+        window.onload = getIP;
+    </script>
+</body>
+</html>
